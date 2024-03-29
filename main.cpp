@@ -6,19 +6,54 @@
 #include <ctime>
 
 struct Particle{
-    double x = 11;
-    double y = 11;
+    double x = 50;
+    double y = 50;
 
-    void move(){
+    //Constructor
+    //Particle(double xint, double yint){
+       //this -> x = xint;
+        //this -> y = yint;
+    //}
+
+    void move(double xmax, double ymax){
         int direction = rand() % 4;
-        //Abajo
-        if(direction == 0){ y -= 0.5; }
-        //Arriba
-        if(direction == 1){ y += 0.5; }
-        //Derecha
-        if(direction == 2){ x -= 0.5; }
-        //Izquierda
-        if(direction == 3){ x += 0.5; }
+        switch(direction){
+            //Abajo
+            case 0:
+                if (y > 0){
+                    y -= 1;
+                }else{
+                    y += 1;
+                }
+                break;
+
+            //Arriba
+            case 1:
+                if (y < ymax){
+                    y += 1;
+                }else{
+                    y -= 1;
+                }
+                break;
+
+            //Izquierda
+            case 2:
+                if (x > 0){
+                    x -= 1;
+                }else{
+                    x += 1;
+                }
+                break;
+
+            //Derecha
+            case 3:
+                if (x < xmax){
+                    x += 1;
+                }else{
+                    x -= 1;
+                }
+                break;
+        }
     }
 
 };
@@ -26,34 +61,37 @@ struct Particle{
 typedef std::vector<Particle> particles;
 
 //void init(particles & position);
-void update(particles & position, double time, double dt);
+void update(particles & position, int nsteps);
 
 int main(){
+    int Nmol = 500;
+    int LatSize = 64;
+    int Nsteps = 1000;
+    int seed = 0;
+
     particles prueba1;
-    prueba1.resize(3);
+    prueba1.resize(Nmol);
 
     //Semilla aleatoria 
     srand(time(NULL));
-    update(prueba1, 10.0, 1.0);
-
-    //Imprimir posicion de las particulas en el tiempo dado
-    std::ofstream outfile;
-    outfile.open("data.txt");
-    for(int jj = 0; jj < prueba1.size(); jj++){
-            outfile << prueba1[jj].x << "\t" << prueba1[jj].y << "\n";
-        }
-    outfile.close();
+    update(prueba1, Nsteps);
 
     return 0;
 }
+
 //actualizar posiciones
-void update(particles & position, double time, double dt){
-    int Nsteps = time/dt;
+void update(particles & position, int nsteps){
     int N = position.size();
 
-    for(int ii = 0; ii < Nsteps; ii++){
+    std::ofstream outfile;
+    outfile.open("positions.txt");
+    for(int ii = 0; ii < nsteps; ii++){
+        outfile << ii << "\t";
         for(int jj = 0; jj < N; jj++){
-            position[jj].move();
+            position[jj].move(100, 100);
+            outfile << position[jj].x << "\t" << position[jj].y << "\t";
         }
+        outfile << "\n";
     }
+    outfile.close();
 }
